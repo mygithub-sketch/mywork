@@ -1,0 +1,295 @@
+<template> 
+    <div class="card-wrapper">    
+<lightning-card>                
+    <div class="slds-page-header">                    
+                <div class="slds-media slds-no-space slds-grow">
+                    <div class="slds-media__figure">                       
+                        <span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right iconheight">
+                            <lightning-icon class="slds-icon slds-icon slds-icon_small slds-icon-text-default" icon-name="standard:today" size="small" alternative-text="icon"></lightning-icon>
+                        </span>
+                    </div>
+                    <div></div>
+                    <div class="slds-media__body">
+                        <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="TIME TRACKER"><span style="margin-right: 5px;">TIME CLOCK</span>
+                           <!-- <lightning-icon class="custom-icon" icon-name="utility:checkin" size="xx-small" ></lightning-icon> -->
+                            <lightning-icon class="custom-icon" icon-name="utility:checkin" size="xx-small" style="z-index: 1; vertical-align: top !important;"></lightning-icon>
+                            
+                        </h1>
+                    </div>
+                </div>                    
+    </div>
+              
+    
+    <div class="slds-box">
+    <div class="slds-grid slds-wrap">
+        <div class="slds-p-right_x-small slds-col slds-size--1-of-1 slds-medium-size--3-of-6 slds-large-size--4-of-12">
+    <table>
+        <tbody>
+            <tr>
+                <th>Worker Name</th>
+                <td class="workercenter-content">
+                    <template if:true={empOptions}>
+                            {empOptions}
+                    </template>
+                    <template if:false={empOptions}>
+                        <p>No worker found</p>
+                    </template>                                
+                </td>
+            </tr>                        
+            <tr>
+                <th>Date</th>
+             <td>
+                    <lightning-input name="Date" value={selectedDate} type="date" onchange={showDate}></lightning-input>
+                </td>
+            </tr>            
+                <tr if:true={isLocationEnabled}>
+                    <th> Location</th>                   
+                    <td>
+                        <div class="slds-m-around_left">
+                            <lightning-combobox name="locationsPicklist"  placeholder="--Select--" options={locationOptions} value={selectedLocation} onchange={handleLocationChange} ></lightning-combobox> 
+                        </div>
+                    </td>
+                </tr>                 
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+
+            </lightning-card>                                           
+             
+            <template if:true={isToday}>
+            <lightning-card >
+                <div class="slds-hint-parent">                    
+                    <div class="slds-p-around_large" id="imageContainer">
+                        <template if:true={showPunchinButton}>
+                        <button data-action="punchin" onclick={punchinButtonClick} class="slds-button">
+                            <img src={punchInImageUrl} alt="Punch In" width="70" height="70"></img>
+                        </button>
+                    </template>
+                        <template if:true={showPunchOutButton}>
+                            <button data-action="punchout" onclick={punchoutButtonClick} class="slds-button">
+                                <img src={punchOutImageUrl} alt="Punch Out" width="70" height="70"></img>
+                            </button>
+                        </template>
+                        <template if:true={showbreakinButton}>
+                        <button data-action="breakin"  onclick={breakinButtonClick} class="slds-button">
+                            <img src={breakInImageUrl} alt="Break In" width="70" height="70"></img>
+                        </button>
+                       </template>
+                       <template if:true={showlunchinButton}>
+                        <button data-action="lunchin"  onclick={lunchinButtonClick} class="slds-button">
+                            <img src={lunchInImageUrl} alt="Lunch In" width="70" height="70"></img>
+                        </button>
+                        </template>
+                        <template if:true={showbreakoutButton}>
+                        <button data-action="breakout"  onclick={breakoutButtonClick} class="slds-button">
+                            <img src={breakOutImageUrl} alt="Break Out" width="70" height="70"></img>
+                        </button>
+                        </template>
+                        <template if:true={showlunchoutButton}>
+                        <button data-action="lunchout"  onclick={lunchoutButtonClick} class="slds-button">
+                            <img src={lunchOutImageUrl} alt="Lunch Out" width="70" height="70"></img>
+                        </button>
+                        </template>
+                    </div>
+                </div>
+            </lightning-card>
+        </template>
+            
+                  
+<lightning-card>    
+    <article class="slds-card">
+        <div class="slds-scrollable_x">
+        <h1 style="font-size:20px;">Timecards</h1>
+        <table class="slds-table slds-table_cell-buffer slds-max-medium-table_stacked-horizontal slds-table_bordered slds-table_col-bordered">
+            <thead>
+            <tr class="slds-line-height_reset">
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Daily Timecard Name">Daily Timecard Name</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Scheduled Start Time">Scheduled Start Time </div>
+                </th> 
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Scheduled End Time">Scheduled End Time	</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Punch In">Punch-In</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Punch out">Punch-Out</div>
+                </th>              
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Total Hours">Total Hours</div>
+                </th>                                
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Total Break">Total Break	</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Total Lunch">Total Lunch	</div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>            
+            <template for:each={timecards} for:item="timecard">
+                <tr key={timecard.Id} class="slds-hint-parent">
+                    <td data-label="Daily Timecard Name">
+                        <div class="slds-truncate" title={timecard.Name}>{timecard.Name}</div>
+                    </td>
+                    <td data-label="Scheduled Start Time">
+                        <div class="slds-truncate" title={timecard.HRMSUS__Start_Time_HH_MM__c}>{timecard.HRMSUS__Start_Time_HH_MM__c}</div>
+                    </td>
+                    <td data-label="Scheduled End Time">
+                        <div class="slds-truncate" title={timecard.HRMSUS__End_Time_HH_MM__c}>{timecard.HRMSUS__End_Time_HH_MM__c}</div>
+                    </td>
+                    <td data-label="Punch In">
+                        <div class="slds-truncate" title={timecard.HRMSUS__Punch_In_HH_MM__c}>{timecard.HRMSUS__Punch_In_HH_MM__c}</div>
+                    </td>
+                    <td data-label="Punch out">
+                        <div class="slds-truncate" title={timecard.HRMSUS__Punch_Out_HH_MM__c}>{timecard.HRMSUS__Punch_Out_HH_MM__c}</div>
+                    </td>        
+                    <td data-label="Total Hours">
+                        <div class="slds-truncate" title={timecard.HRMSUS__Total_Hours__c}>{timecard.HRMSUS__Total_Hours__c}</div>
+                    </td>                                    
+                    <td data-label="Total Break">
+                        <div class="slds-truncate" title={timecard.HRMSUS__Total_Break_Length__c}>{timecard.HRMSUS__Total_Break_Length__c}</div>
+                    </td>
+                    <td data-label="Total Lunch">
+                        <div class="slds-truncate" title={timecard.HRMSUS__Total_Lunch_Length__c}>{timecard.HRMSUS__Total_Lunch_Length__c}</div>
+                    </td>
+                </tr>
+            </template>        
+        </tbody>
+    </table>
+</div>
+</article>
+</lightning-card>
+
+
+            <lightning-card>
+                <article class="slds-card">
+                        <div class="slds-scrollable">
+                            <h1 style="font-size:20px;">Break Time</h1>
+                            <table class="slds-table slds-table_cell-buffer slds-max-medium-table_stacked-horizontal slds-table_bordered slds-table_col-bordered">
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Break Name">Break</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Time Card">Time Card</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Type">Type</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Today Date">Today Date</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Break-In">Break-In</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Break-Out">Break-Out</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Total Hours">Total Hours</div>
+                                        </th> 
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={ListBreak} for:item="LBrk">
+                                        <tr key={LBrk.Id} class="slds-hint-parent">
+                                            <td data-label="Break">
+                                                <div class="slds-truncate" title={LBrk.Name}>{LBrk.Name}</div>
+                                            </td>
+                                            <td data-label="Time Card">
+                                                <div class="slds-truncate" title={LBrk.HRMSUS__Timecard__c}>{LBrk.HRMSUS__Timecard__r.Name}</div>
+                                            </td>
+                                            <td data-label="Type">
+                                                <div class="slds-truncate" title={LBrk.HRMSUS__Type__c}>{LBrk.HRMSUS__Type__c}</div>
+                                            </td>
+                                            <td data-label="Today Date">
+                                                <div class="slds-truncate" title={LBrk.HRMSUS__Date__c}>{LBrk.HRMSUS__Date__c}</div>
+                                            </td>
+                                            <td data-label="Break-In">
+                                                <div class="slds-truncate" title={LBrk.HRMSUS__Start_Time_HH_MM__c}>{LBrk.HRMSUS__Start_Time_HH_MM__c}</div>
+                                            </td>        
+                                            <td data-label="Break-Out">
+                                                <div class="slds-truncate" title={LBrk.HRMSUS__End_Time_HH_MM__c}>{LBrk.HRMSUS__End_Time_HH_MM__c}</div>
+                                            </td>                                    
+                                            <td data-label="Total Hours">
+                                                <div class="slds-truncate" title={LBrk.HRMSUS__Hours__c}>{LBrk.HRMSUS__Hours__c}</div>
+                                            </td>                                                    
+                                     </tr>
+                                 </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+        </lightning-card>
+
+        <lightning-card>
+        <article class="slds-card">
+            <div class="slds-scrollable">
+                <h1 style="font-size:20px;">Lunch Time</h1>
+                <table class="slds-table slds-table_cell-buffer slds-max-medium-table_stacked-horizontal slds-table_bordered slds-table_col-bordered">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Lunch">Lunch</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Time Card">Time Card</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Type">Type</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Today Date">Today Date</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Contact">Lunch-In</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Amount">Lunch-Out</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Total Hours">Total Hours</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={listLunch} for:item="lunchItem" >
+                            <tr key={lunchItem.Id} class="slds-hint-parent">
+                                <td data-label="Lunch">
+                                    <div class="slds-truncate" title={lunchItem.Name}>{lunchItem.Name}</div>
+                                </td>
+                                <td data-label="Time Card">
+                                    <div class="slds-truncate" title={lunchItem.HRMSUS__Timecard__c}>{lunchItem.HRMSUS__Timecard__r.Name}</div>
+                                </td>
+                                <td data-label="Type">
+                                    <div class="slds-truncate" title={lunchItem.HRMSUS__Type__c}>{lunchItem.HRMSUS__Type__c}</div>
+                                </td>
+                                <td data-label="Today Date">
+                                    <div class="slds-truncate" title={lunchItem.HRMSUS__Date__c}>{lunchItem.HRMSUS__Date__c}</div>
+                                </td>
+                                <td data-label="Lunch-In">
+                                    <div class="slds-truncate" title={lunchItem.HRMSUS__Start_Time_HH_MM__c}>{lunchItem.HRMSUS__Start_Time_HH_MM__c}</div>
+                                </td>
+                                <td data-label="Lunch-Out">
+                                    <div class="slds-truncate" title={lunchItem.HRMSUS__End_Time_HH_MM__c}>{lunchItem.HRMSUS__End_Time_HH_MM__c}</div>
+                                </td>
+                                <td data-label="Total Hours">
+                                    <div class="slds-truncate" title={lunchItem.HRMSUS__Hours__c}>{lunchItem.HRMSUS__Hours__c}</div>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </article>
+    </lightning-card>
+</div>
+
+</template>

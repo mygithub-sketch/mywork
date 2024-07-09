@@ -1,0 +1,82 @@
+/*.labelColour{
+    --lwc-colorTextLabel: blue !important;
+}*/
+.footer {
+    text-align: center;
+    margin-top: 20px;
+}
+.small-combobox {
+    width: 40px; /* Adjust the width as needed */
+}
+.THIS .color  {
+    color: blue;
+}
+.CssTotal{
+	text-align: right;
+	color: red;
+	font-weight: 500;
+	font-size: 1rem;
+}
+@media (max-width: 48em) {
+    .CssTotal {
+      display: none;
+    }
+    td[data-label="Start Time"], td[data-label="End Time"] {
+        display: flex;
+            flex-direction: column;
+            text-align: left;
+    }
+    .mobile-row {
+        display: flex;
+        flex-direction: column;
+      }
+    td {
+        width: 100% !important; 
+    }
+    .max-content {
+        width: 100% !important; 
+    }
+}
+
+.header p lightning-button { 
+    margin-right: 5px; 
+}
+.footer p lightning-button {
+    margin-right: 5px; 
+}
+.my-icon {
+    --slds-c-icon-color-foreground:blue; 
+    --slds-c-icon-color-foreground-default:blue;
+}
+.boxsize{
+border-width: var(--lwc-borderWidthThin, 1px);
+line-height: var(--lwc-lineHeightReset, 1);
+    vertical-align: middle;
+    color: var(--slds-g-color-neutral-base-50, var(--lwc-colorTextIconDefault,rgb(116, 116, 116)));
+    border: var(--lwc-borderWidthThin, 1px) solid var(--slds-g-color-border-base-1);
+    transition: border .15s linear;
+    border-color: var(--slds-g-color-border-base-4);
+    margin-top: 24px;
+    padding-top: 0px;
+    width: 28px;
+    background-color: lightskyblue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.slds-truncate {
+    overflow: visible;
+}
+.ipNumclass
+{
+	min-height: 2rem;
+  /* border-radius: 10px;*/
+	text-align: center;
+}
+.custom-tr-class {
+    padding: 1px;
+}
+:host table.slds-table td,
+:host table.slds-table th {
+    padding: 2px 4px;
+}

@@ -1,0 +1,47 @@
+@media (max-width: 48em) {
+    .CssWorker {
+      display: none;
+    }
+} 
+@media only screen and (max-width: 600px) {
+  /* Apply styles specific to mobile view */
+  .slds-hint-parent {
+    border-top: 2px solid #808080; 
+  }
+  .slds-hint-parent select {
+    width: 60px !important; /* Adjust the width of the select as needed */
+    /* You can also add additional styling as needed */  
+}
+}
+
+.slds-hint-parent .hours-td select {
+  width: 150px; /* Adjust the default width for desktop */
+}
+.slds-input {
+  padding-top: 0;
+  padding-right: var(--slds-c-input-spacing-horizontal-end, var(--sds-c-input-spacing-horizontal-end, var(--lwc-spacingMedium,1rem)));
+  padding-bottom: 0;
+  padding-left: var(--slds-c-input-spacing-horizontal-start, var(--sds-c-input-spacing-horizontal-start, var(--lwc-spacingSmall, 0.75rem)));
+  width: 100%;
+ /*min-height: calc(var(--lwc-heightInput, 1.875rem) + (var(--lwc-borderWidthThin, 1px) * 2));
+  line-height: var(--lwc-heightInput, 1.875rem);*/
+  border: var(--lwc-borderWidthThin, 1px) solid var(--slds-c-input-color-border, var(--sds-c-input-color-border, var(--slds-g-color-border-base-4, var(--lwc-colorBorderInput,rgb(201, 201, 201)))));
+  border-radius: var(--slds-c-input-radius-border, var(--sds-c-input-radius-border, var(--lwc-borderRadiusMedium, 0.25rem)));
+  background-color: var(--slds-c-input-color-background, var(--sds-c-input-color-background, var(--slds-g-color-neutral-base-100, var(--lwc-colorBackgroundInput,rgb(255, 255, 255)))));
+  color: var(--slds-c-input-text-color, var(--sds-c-input-text-color));
+  box-shadow: var(--slds-c-input-shadow, var(--sds-c-input-shadow));
+  transition: border var(--lwc-durationQuickly, 0.1s) linear,background-color var(--lwc-durationQuickly, 0.1s) linear;
+  display: inline-block;
+    --slds-c-input-color-background: var(--sds-c-input-color-background, var(--sds-c-input-color-background, var(--slds-g-color-neutral-base-100, var(--lwc-colorBackgroundInput,rgb(255, 255, 255)))));
+    --slds-c-input-text-color: var(--slds-c-input-text-color, var(--sds-c-input-text-color));
+    background-clip: padding-box;
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+  font-size: 20px; 
+}
+
+@media (min-width: 800px) {
+  .hide-desktop {
+      display: none;
+  }
+}

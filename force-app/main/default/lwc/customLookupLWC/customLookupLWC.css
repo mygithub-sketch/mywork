@@ -1,0 +1,6 @@
+@media only screen and (max-width: 600px) {
+    .slds-dropdown {
+        z-index: 1;
+        position:relative;
+    }
+}

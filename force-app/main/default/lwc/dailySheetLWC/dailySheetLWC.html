@@ -1,0 +1,483 @@
+<template>
+    <lightning-card> 
+        <div class="slds-page-header">
+        <div class="slds-media">
+            <div class="slds-media__figure">
+                <img src={timeSheetIcon} alt="Time Sheet" width="30" height="30" />
+            </div>
+            <div class="slds-media__body">
+                <h1 class="slds-page-header__title slds-truncate slds-align-middle" style="color: #009ddc;" title="Daily Time Sheet">
+                    Daily Time Sheet
+                </h1>
+            </div>
+        </div>
+    </div></lightning-card>
+    <lightning-card>
+        <div class="header" style="font-weight: bold;margin-left: 10px; ">
+            <p>
+                <lightning-button label="Save" variant="brand" icon-name="utility:save" onclick={handleSave}></lightning-button>
+                <lightning-button label="Weekly Time Entry" variant="brand" icon-name="utility:new" onclick={gotoURL1}></lightning-button>
+            </p>
+        </div>
+        <div class="slds-p-horizontal_small">
+            <lightning-layout pull-to-boundary="medium" multiple-rows="true">
+                <lightning-layout-item flexibility="auto" padding="horizontal-medium" size="12" small-device-size="12" medium-device-size="6" large-device-size="2">
+                    
+                        <lightning-combobox name="workerList" class="max-content"
+                                        label="Worker"
+                                        message-when-value-missing="SELECT AN EMPLOYEE"
+                                        value={selectedWorkerId}
+                                        options={workers}
+                                        onchange={handleWorkerChange}>
+                        </lightning-combobox>
+                    
+                </lightning-layout-item>
+                <lightning-layout-item flexibility="auto" padding="horizontal-medium" size="12" small-device-size="12" medium-device-size="6" large-device-size="2">
+                  
+                </lightning-layout-item>
+                <lightning-layout-item flexibility="auto" padding="horizontal-medium" size="12" small-device-size="12" medium-device-size="6" large-device-size="3">
+    
+                    <lightning-button-group>
+                        
+                        <lightning-icon class="boxsize" icon-name="utility:chevronleft" variant="Inverse" size="x-small" onclick={handleDayPrevious} alternative-text="Previous Date"   ></lightning-icon>
+                        <lightning-input type="date" name="input1" value={selectedDate} label="Date" onchange={changedate}  class="labelColour" ></lightning-input>
+                        <lightning-icon class="boxsize" icon-name="utility:chevronright" variant="Inverse" size="x-small" onclick={handleDayNext} alternative-text="Next Date" ></lightning-icon>
+                    </lightning-button-group>
+
+                </lightning-layout-item>
+                <lightning-layout-item flexibility="auto" padding="horizontal-medium" size="12" small-device-size="12" medium-device-size="6" large-device-size="4">
+                  
+                </lightning-layout-item>
+            </lightning-layout>
+        <br/>
+        </div>
+        <template if:true={isShowModal}>
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+       <div class="slds-modal__container">
+        <!-- modal header start -->
+          <header class="slds-modal__header">
+             <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={hideModalBox}>
+                <lightning-icon icon-name="utility:close"
+                   alternative-text="close"
+                   variant="inverse"
+                   size="small" ></lightning-icon>
+                <span class="slds-assistive-text">Close</span>
+             </button>
+          <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate"></h2>  
+          </header>
+      
+          <!-- modal body start -->
+          <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <p>Are you Sure ?</p>
+          </div>
+
+          <!-- modal footer start-->
+          <footer class="slds-modal__footer">
+             <button class="slds-button slds-button_neutral" onclick={hideModalBox}>No</button>
+             <button class="slds-button slds-button_brand"  onclick={deleteSelectedRow}>Yes</button>
+          </footer>
+       
+       </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+ </template>
+ <!-- modal end -->
+       
+ <div class="slds-zoom">    
+        <template if:true={totalHoursEntry}> 
+        <table class="slds-table slds-table_cell-buffer slds-max-medium-table_stacked-horizontal slds-table_striped slds-m-top_small slds-scrollable_y slds-scrollable_x lableController" aria-labelledby="element-with-table-label other-element-with-table-label">
+     <!-- Totalhrs block -->
+
+            <thead>
+                <tr class="slds-line-height_reset slds-text-title_caps">
+                    <th scope="col"> <div class="slds-truncate" title="Customer">Customer</div> </th>
+                    <th scope="col"> <div class="slds-truncate" title="Project">Project</div> </th>  
+                    <th scope="col"> <div class="slds-truncate" title="Task">Task</div> </th>                                        
+                    <th scope="col"> <div class="slds-truncate" title="Total">Total</div> </th>
+                    <th scope="col"> <div class="slds-truncate" title="Billable">Bill</div> </th>  
+                    <th scope="col"> <div class="slds-truncate" title="Comments">Comments</div>  </th>
+                     <th scope="col"> <div class="slds-truncate" title="Add">Add</div>  </th>
+                    <th scope="col"> <div class="slds-truncate" title="Delete">Delete</div> </th>
+                    <th scope="col"> <div class="slds-truncate" title="Clone">Clone</div>  </th>
+                </tr>
+            </thead>
+            <tbody>
+                <template for:each={data} for:item="obj" for:index="index">
+                    <tr class="slds-card" key={obj.Id}>
+                        <td data-label="Customer" scope="row">
+                            <div class="slds-truncate"> 
+                            <c-custom-lookup-l-w-c   icon-name="standard:account" 
+                                                     unique-name ="Account"
+                                                    s-object-api-name="Account"
+                                                    label-hidden="true"  placeholder="Search..."
+                                                    where=" Name != null" data-index={index}
+                                                    initial-lookup-value={obj.HRMSUS__Customer__c}
+                                                    onlookupupdate ={lookupRecord} ></c-custom-lookup-l-w-c>
+                            </div> </td>
+                        <td data-label="Project">
+                            <div class="slds-truncate"> 
+                            <c-custom-lookup-l-w-c icon-name="standard:orders"
+                                                    s-object-api-name="HRMSUS__Projects__c"
+                                                    label-hidden="true" 
+                                                    initial-lookup-value = {obj.HRMSUS__Project__c}
+                                                    selectedrecords = {obj.HRMSUS__Project__r}
+                                                    placeholder="Search..."  data-index={index}
+                                                    onlookupupdate ={lookupRecordProject}                       
+                                                    where = "HRMSUS__Account__c = "
+                                                    condition ={obj.HRMSUS__Customer__c}
+                                                    ></c-custom-lookup-l-w-c>
+                            </div>   </td>
+                        <td data-label="Task">
+                            <div class="slds-truncate"> 
+                        <c-custom-lookup-l-w-c  icon-name="standard:orders"
+                                                s-object-api-name="HRMSUS__Tasks__c"
+                                                label-hidden="true" data-index={index}
+                                                initial-lookup-value = {obj.HRMSUS__Task__c}
+                                                selectedrecord = {obj.HRMSUS__Task__r}
+                                                onlookupupdate ={lookupRecordTask}
+                                                where= "HRMSUS__Project__c = " 
+                                                condition ={obj.HRMSUS__Project__c}
+                                                placeholder="Search..."></c-custom-lookup-l-w-c>                          
+                            </div> </td>
+                        <td data-label="Total">
+                            <div class="slds-truncate"> 
+                            <lightning-input type="number"  variant="label-hidden" label="Total" name="Total" value={obj.HRMSUS__Total__c} data-id={obj.Id} data-index={index} placeholder="0.00"  onchange={updateTotal} aria-setsize="3" max-length="5" format-fraction-digits="2"></lightning-input>
+                            </div></td>
+                         <td data-label="Bill">
+                            <div class="slds-truncate"> 
+                                <div class="mobile-row">
+                            <lightning-input type="checkbox"  variant="label-hidden" label="Bill" name="Bill" checked={obj.HRMSUS__Billable__c} data-id={obj.Id} data-index={index} onchange={updateBill}></lightning-input>
+                            </div></div></td>
+                         <td data-label="Comments">
+                            <div class="slds-truncate"> 
+                            <lightning-textarea type="text"  variant="label-hidden" label="Comments" name="Comments" value={obj.HRMSUS__Comments__c} data-id={obj.Id} data-index={index} onchange={updateComments}></lightning-textarea>
+                            </div></td>
+                         <td data-label="Add">
+                            <div class="slds-truncate"> 
+                              <lightning-icon class="my-icon" icon-name="utility:description" data-index={index} size="Small" onclick={updateCommentsBox}></lightning-icon> 
+                            </div></td>
+                        <td data-label="Delete">
+                            <div class="slds-truncate"> 
+                        <lightning-icon icon-name="utility:delete" title="Delete" variant="error" data-index={index} icon-variant="error" size="Small"  onclick={deleteRow}></lightning-icon> 
+                            </div></td>
+                        <td data-label="Clone">
+                            <div class="slds-truncate"> 
+                            <lightning-icon class="my-icon" icon-name="utility:copy" alternative-text="Clone" title="Clone" data-index={index}  size="Small" onclick={cloneRow}></lightning-icon>        
+                            </div></td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </template>    
+    <template if:false={totalHoursEntry}>
+    <template if:true={timeFormatCustomSetting}> 
+             <table class="slds-table slds-table_cell-buffer slds-max-medium-table_stacked-horizontal slds-table_striped slds-m-top_small slds-scrollable_y slds-scrollable_x lableController" aria-labelledby="element-with-table-label other-element-with-table-label">
+          <!-- Time entry block -->
+                 <thead>
+                     <tr class="slds-line-height_reset slds-text-title_caps">
+                         <th scope="col"> <div class="slds-truncate" title="Customer">Customer</div> </th>
+                         <th scope="col"> <div class="slds-truncate" title="Project">Project</div> </th>  
+                         <th scope="col"> <div class="slds-truncate" title="Task">Task</div> </th> 
+                         <th colspan="1" scope="col"> <div class="slds-truncate" title="Start Time">Start Time </div> </th>    
+                         <th colspan="1" scope="col"> <div class="slds-truncate" title="End Time">End Time</div> </th>                                               
+                         <th scope="col"> <div class="slds-truncate" title="Billable">Bill</div> </th>  
+                         <th scope="col"> <div class="slds-truncate" title="Comments">Comments</div>  </th>
+                          <th scope="col"> <div class="slds-truncate" title="Add">Add</div>  </th>
+                          <th scope="col"> <div class="slds-truncate" title="Total">Total</div> </th>
+                         <th scope="col"> <div class="slds-truncate" title="Delete">Delete</div> </th>
+                         <th scope="col"> <div class="slds-truncate" title="Clone">Clone</div>  </th>
+                     </tr>
+                 </thead>
+                 <tbody>
+                     <template for:each={data} for:item="obj" for:index="index">
+                         <tr class="slds-text-title slds-hint-parent" key={obj.Id}>
+                             <td data-label="Customer" scope="row">
+                                <div class="slds-truncate"> 
+                                 <c-custom-lookup-l-w-c   icon-name="standard:account" 
+                                                          unique-name ="Account"
+                                                         s-object-api-name="Account"
+                                                         label-hidden="true"  placeholder="Search..."
+                                                         where=" Name != null" data-index={index}
+                                                         initial-lookup-value={obj.HRMSUS__Customer__c}
+                                                         onlookupupdate ={lookupRecord} ></c-custom-lookup-l-w-c>
+                                </div> </td>
+                             <td data-label="Project">
+                                <div class="slds-truncate"> 
+                                 <c-custom-lookup-l-w-c icon-name="standard:orders"
+                                                         s-object-api-name="HRMSUS__Projects__c"
+                                                         label-hidden="true" 
+                                                         initial-lookup-value = {obj.HRMSUS__Project__c}
+                                                         selectedrecords = {obj.HRMSUS__Project__r}
+                                                         placeholder="Search..."  data-index={index}
+                                                         onlookupupdate ={lookupRecordProject}                       
+                                                         where = "HRMSUS__Account__c = "
+                                                         condition ={obj.HRMSUS__Customer__c}
+                                                         ></c-custom-lookup-l-w-c>
+                                </div>   </td>
+                             <td data-label="Task">
+                                <div class="slds-truncate"> 
+                             <c-custom-lookup-l-w-c  icon-name="standard:orders"
+                                                     s-object-api-name="HRMSUS__Tasks__c"
+                                                     label-hidden="true" data-index={index}
+                                                     initial-lookup-value = {obj.HRMSUS__Task__c}
+                                                     selectedrecord = {obj.HRMSUS__Task__r}
+                                                     onlookupupdate ={lookupRecordTask}
+                                                     where= "HRMSUS__Project__c = " 
+                                                     condition ={obj.HRMSUS__Project__c}
+                                                     placeholder="Search..."></c-custom-lookup-l-w-c>
+                                </div>
+                             </td>
+                             <td width="8.5%" data-label="Start Time">  
+                                <div class="slds-truncate">                       
+                                    <lightning-input style="margin-bottom:17px;" type="time" name="Start Time"  value={obj.HRMSUS__Start_Times__c}  onchange={handleStartDateTimeChange} data-index={index} min="00:00:00.000Z" max="23:45:00.000Z"></lightning-input>                               
+                                </div>    
+                            </td>
+                            <td width="8.5%" data-label="End Time"> 
+                                <div class="slds-truncate">                             
+                                     <lightning-input style="margin-bottom:17px;" type="time" name="End Time"  value={obj.HRMSUS__End_Times__c} onchange={handleEndDateTimeChange} data-index={index} min="00:00:00.000Z" max="23:45:00.000Z"></lightning-input>                               
+                                </div>    
+                            </td>
+                            <td data-label="Bill">
+                                <div class="slds-truncate">
+                                    <div class="mobile-row">
+                                    <lightning-input type="checkbox" checked={obj.HRMSUS__Billable__c} data-id={obj.Id} data-index={index} onchange={updateBill}></lightning-input>
+                                </div> </div>
+                            </td> 
+                              <td data-label="Comments">
+                                <div class="slds-truncate">
+                                 <lightning-textarea type="text"  variant="label-hidden" label="Comments" name="Comments" value={obj.HRMSUS__Comments__c} data-id={obj.Id} data-index={index} onchange={updateComments}></lightning-textarea>
+                                </div></td>
+                              <td data-label="Add">
+                                <div class="slds-truncate">
+                                 <lightning-icon class="my-icon" icon-name="utility:description" title="Add" data-index={index} size="Small"  onclick={updateCommentsBox} ></lightning-icon> 
+                                </div></td>
+                            <td data-label="Total" >
+                                <div class="slds-truncate">
+                                    <lightning-formatted-number value={obj.HRMSUS__Total__c}  minimum-fraction-digits="2" maximum-fraction-digits="2"  data-index={index} onchange={updateTotal} ></lightning-formatted-number>
+                                </div>
+                             </td>
+                             <td data-label="Delete">
+                                <div class="slds-truncate">
+                                    <lightning-icon icon-name="utility:delete" title="Delete" variant="error" data-index={index} size="Small" icon-class="red" onclick={deleteRow} ></lightning-icon> 
+                                </div>
+                            </td>
+                             <td data-label="Clone">
+                                <div class="slds-truncate">
+                                    <lightning-icon class="my-icon" icon-name="utility:copy"  alternative-text="Clone" title="Copy"  data-index={index} size="Small" onclick={cloneRow}></lightning-icon> 
+                                </div>
+                            </td>
+                         </tr>                      
+                     </template>
+                     <tr>
+                        <th class="widthClass CssTotal" colspan="8.5" style="text-align: right;color: red;font-weight: bold;font-size: 1rem;">Total</th>
+                        <td colspan="4" data-label="Grand Total">
+                            <div class="slds-truncate">
+                                <lightning-formatted-number value={totalsum} format-style="decimal" minimum-fraction-digits="2" maximum-fraction-digits="2"></lightning-formatted-number>
+                            </div>
+                        </td>
+                    </tr>
+                 </tbody>
+             </table>
+    </template>
+    <template if:false={timeFormatCustomSetting}> 
+        <table class="slds-table slds-table_cell-buffer slds-max-medium-table_stacked-horizontal slds-table_striped slds-m-top_small slds-scrollable_y slds-scrollable_x lableController" aria-labelledby="element-with-table-label other-element-with-table-label">
+      <!-- Number Entry block -->
+             <thead>
+                 <tr class="slds-line-height_reset slds-text-title_caps">
+                     <th scope="col"> <div class="slds-truncate"   title="Customer">Customer</div> </th>
+                     <th scope="col"> <div class="slds-truncate" title="Project">Project</div> </th>  
+                     <th scope="col"> <div class="slds-truncate" title="Task">Task</div> </th> 
+                     <th colspan="3" scope="col"> <div class="slds-truncate" title="Start Time">Start Time </div> </th>    
+                     <th colspan="3" scope="col"> <div class="slds-truncate" title="End Time">End Time</div> </th>                                               
+                     <th scope="col"> <div class="slds-truncate" title="Billable">Bill</div> </th>  
+                     <th scope="col"> <div class="slds-truncate" title="Comments">Comments</div>  </th>
+                      <th scope="col"> <div class="slds-truncate" title="Add">Add</div>  </th>
+                      <th scope="col"> <div class="slds-truncate" title="Total">Total</div> </th>
+                     <th scope="col"> <div class="slds-truncate" title="Delete">Delete</div> </th>
+                     <th scope="col"> <div class="slds-truncate" title="Clone">Clone</div>  </th>
+                 </tr>
+             </thead>
+             <tbody>
+                 <template for:each={data} for:item="obj" for:index="index">
+                     <tr class="slds-text-title slds-hint-parent" key={obj.Id}>
+                         <td data-label="Customer" scope="row" >
+                            <div class="slds-truncate">
+                             <c-custom-lookup-l-w-c   icon-name="standard:account" 
+                                                      unique-name ="Account"
+                                                     s-object-api-name="Account"
+                                                     label-hidden="true"  placeholder="Search..."
+                                                     where=" Name != null" data-index={index}
+                                                     initial-lookup-value={obj.HRMSUS__Customer__c}
+                                                     onlookupupdate ={lookupRecord} ></c-custom-lookup-l-w-c>
+                                                    </div></td>
+                         <td  data-label="Project">
+                            <div class="slds-truncate">
+                             <c-custom-lookup-l-w-c icon-name="standard:orders"
+                                                     s-object-api-name="HRMSUS__Projects__c"
+                                                     label-hidden="true" 
+                                                     initial-lookup-value = {obj.HRMSUS__Project__c}
+                                                     selectedrecords = {obj.HRMSUS__Project__r}
+                                                     placeholder="Search..."  data-index={index}
+                                                     onlookupupdate ={lookupRecordProject}                       
+                                                     where = "HRMSUS__Account__c = "
+                                                     condition ={obj.HRMSUS__Customer__c}
+                                                     ></c-custom-lookup-l-w-c>
+                                                    </div> </td>
+                         <td data-label="Task">
+                            <div class="slds-truncate">
+                         <c-custom-lookup-l-w-c  icon-name="standard:orders"
+                                                 s-object-api-name="HRMSUS__Tasks__c"
+                                                 label-hidden="true" data-index={index}
+                                                 initial-lookup-value = {obj.HRMSUS__Task__c}
+                                                 selectedrecord = {obj.HRMSUS__Task__r}
+                                                 onlookupupdate ={lookupRecordTask}
+                                                 where= "HRMSUS__Project__c = " 
+                                                 condition ={obj.HRMSUS__Project__c}
+                                                 placeholder="Search..."></c-custom-lookup-l-w-c>
+                                                </div> </td>
+                         <td style="width: 5%;" data-label="Start Time">
+                            <div class="slds-truncate">
+                                <input type="number"  class="ipNumclass slds-select ipMobile" min="00" max="23" maxlength="2"
+                                    value={obj.HRMSUS__Start_Time_Hrs__c} oninput={handleChangeStartTimeHours} data-index={index} />
+                            </div>
+                        </td>
+                        <td style="width: 5%;">
+                            <div class="slds-truncate">
+                                <input type="number" class="ipNumclass slds-select" min="00" max="59"
+                                    value={obj.HRMSUS__Start_Time_Mns__c} oninput={handleChangeStartTimeMns} data-index={index} />
+                            </div>
+                        </td>
+                        <td style="width: 7%;">  
+                            <div class="slds-truncate">
+                            <div style="margin-top: -15px;" >
+                            <lightning-select class="max-content" value={obj.HRMSUS__St_Meridian__c} label=""  options={productOptions} onchange={handleChangeStartTimeMeridian} data-index={index} style="border-radius: 10px;"></lightning-select>        
+                        </div></div> </td>
+                        <td style="width: 5%;" data-label="End Time">
+                            <div class="slds-truncate">
+                                <input type="number"  class="ipNumclass slds-select" min="00" max="23" maxlength="2"
+                                    value={obj.HRMSUS__End_Time_Hrs__c} oninput={handleChangeEndTimeHours} data-index={index} />
+                            </div>
+                        </td>
+                        <td style="width: 5%;">
+                            <div class="slds-truncate">
+                                <input type="number" id={stHrsMinsId} class="ipNumclass slds-select" min="00" max="59"
+                                    value={obj.HRMSUS__End_Time_Mns__c} oninput={handleChangeEndTimeMns} data-index={index} />
+                            </div> 
+                        </td>
+                        <td style="width: 7%;"> 
+                            <div class="slds-truncate">
+                            <div  style="margin-top: -15px;" >                      
+                            <lightning-select class="max-content rounded-border" value={obj.HRMSUS__En_Meridian__c} label=""  options={productOptions} onchange={handleChangeEndTimeMeridian} data-index={index} style="border-radius: 10px;" ></lightning-select>    
+                        </div> </div> </td>
+                          <td data-label="Bill" >
+                            <div class="slds-truncate">
+                                <div class="mobile-row">
+                             <lightning-input type="checkbox"  variant="label-hidden" label="Bill" name="Bill" checked={obj.HRMSUS__Billable__c}  data-index={index} onchange={updateBill}></lightning-input>
+                            </div> </div>
+                          </td>
+                          <td data-label="Comments"> 
+                            <div class="slds-truncate">
+                             <lightning-textarea type="text"  variant="label-hidden" label="Comments" name="Comments" value={obj.HRMSUS__Comments__c} data-id={obj.Id} data-index={index} onchange={updateComments}></lightning-textarea>
+                            </div>  </td>
+                          <td data-label="Add">
+                            <div class="slds-truncate">
+                             <lightning-icon class="my-icon" icon-name="utility:description" title="Add" data-index={index} size="Small" onclick={updateCommentsBox} ></lightning-icon> 
+                            </div> </td>
+                        <td data-label="Total" >
+                            <div class="slds-truncate">
+                                <lightning-formatted-number value={obj.HRMSUS__Total__c}  minimum-fraction-digits="2" maximum-fraction-digits="2"  data-index={index} onchange={updateTotal} ></lightning-formatted-number>
+                            </div>
+                        </td>
+                         <td data-label="Delete">
+                            <div class="slds-truncate">
+                         <lightning-icon icon-name="utility:delete" title="Delete" variant="error" data-index={index} size="Small"  onclick={deleteRow} ></lightning-icon> 
+                        </div></td>
+                         <td data-label="Clone">
+                            <div class="slds-truncate">
+                             <lightning-icon class="my-icon" icon-name="utility:copy"  alternative-text="Clone"  title="Copy" size="Small" data-index={index}  onclick={cloneRow} ></lightning-icon> 
+                            </div>  
+                         </td> 
+                     </tr> 
+                 </template>
+                 <tr> 
+                    <th class="widthClass CssTotal" colspan="12.5" style="text-align: right;color: red;font-weight: bold;font-size: 1rem;">Total</th>
+                    <td colspan="4" data-label="Grand Total">
+                        <div class="slds-truncate">
+                            <lightning-formatted-number value={totalsum} format-style="decimal" minimum-fraction-digits="2" maximum-fraction-digits="2"></lightning-formatted-number>
+                        </div>
+                    </td>
+                </tr>
+             </tbody>
+         </table>
+     </template> </template> 
+    </div>
+
+    <div> 
+        <lightning-button-icon class="color" slot="actions" size="large" variant="bare"  icon-name="utility:add" alternative-text="Add Timesheet" onclick={addRow}  >
+         </lightning-button-icon>
+    </div> 
+   
+    
+    <div  class="footer" style="font-size: 12px; padding: 8px;">
+        <p>
+            <lightning-button label="Save" variant="brand" icon-name="utility:save" onclick={handleSave}></lightning-button>
+            <lightning-button label="Weekly Time Entry" variant="brand" icon-name="utility:new" onclick={gotoURL1} class="needbrand"></lightning-button>
+        </p>
+    </div>
+    </lightning-card>
+    <template if:true={isShowComments}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+           <div class="slds-modal__container">
+            <!-- modal header start -->
+              <header class="slds-modal__header">
+                 <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={hideModalCommentsBox}>
+                    <lightning-icon icon-name="utility:close"
+                       alternative-text="close"
+                       variant="inverse"
+                       size="small" ></lightning-icon>
+                    <span class="slds-assistive-text">Close</span>
+                 </button>
+              <h2 id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate"> Comments Template</h2>  
+              </header>
+          
+              <!-- modal body start -->
+              <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+                <div class="slds-modal__content1 slds-p-around--large" >
+                    <div >                           
+                        <table class="slds-table slds-table--bordered slds-table--cell-buffer" role="grid">
+                            <thead >
+                                <tr class="slds-text-title--caps">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="">Action</div>
+                                    </th> 
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Comments">Comments</div>
+                                    </th>
+                                </tr>
+                            </thead> 
+                            <tbody>
+                            <template for:each={commentslist} for:item="com" for:index="index">
+                                <tr  key={com.Id}>
+                                    <td><lightning-input type="checkbox" name={com.Id} value={com.HRMSUS__Comments__c} onchange={onCheck} data-id="ckbox" data-index={index}></lightning-input></td>
+                                    <td>{com.HRMSUS__Comments__c}</td>
+                                </tr>     </template>        </tbody>           
+                        </table>  <br />
+                        Selected Comments are : 
+                        <lightning-textarea  type="text"  value={selectedComments}   onchange={handleChangeComments} ></lightning-textarea>
+                    <br />
+                    <div class="slds-text-align_center">
+                        <lightning-button label="Save comments"  variant="brand" onclick={saveComments} ></lightning-button>
+                    </div>
+              </div></div></div>
+    
+              <!-- modal footer start-->
+              <footer class="slds-modal__footer">
+                 <button class="slds-button slds-button_brand" onclick={hideModalCommentsBox}>Cancel</button>
+              </footer>
+           
+           </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+     </template>
+     <!-- modal end -->
+</template>

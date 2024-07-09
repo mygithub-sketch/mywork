@@ -1,0 +1,191 @@
+<template>
+   <lightning-card title="Time Off Request" icon-name="standard:approval">
+   <div class="slds-m-around_small"  >
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col slds-size_1-of-2 slds-col_bump-left " >
+                <lightning-combobox name="workerList"
+                                    label="Select Worker"
+                                    required="true" message-when-value-missing="SELECT AN EMPLOYEE"
+                                    value={selectedWorkerId}
+                                    options={workers}
+                                    onchange={handleWorkerChange}>
+                </lightning-combobox>
+            </div>
+            <div class="slds-col slds-size_1-of-2 ">
+                <lightning-combobox name="timeoffTypeList"
+                                    label="Time Off Type " 
+                                    required="true" message-when-value-missing="SELECT TIME OFF TYPE"
+                                    value={selectedTimeoffTypeId}
+                                    options={timeoffTypes}
+                                    onchange={handleTimeoffTypeChange}>
+                </lightning-combobox>
+            </div>  
+        </div> 
+        <div class="slds-grid slds-gutters CssWorker">
+            <div class="slds-col slds-size_1-of-2 slds-col_bump-left">
+                
+           <lightning-input  type="date" label="Start Date" required="true"  value={selectStartDate} message-when-value-missing="SELECT START DATE" onchange={handleStartDate} ></lightning-input>  
+            </div>
+            <div class="slds-col slds-size_1-of-2">
+                <lightning-input  type="date" label="End Date" required="true"  value={selectEndDate}  message-when-value-missing="SELECT END DATE" onchange={handleEndtDate}></lightning-input>
+            </div> 
+        </div>   
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col slds-size_1-of-2 slds-col_bump-left hide-desktop">
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="startDate"><span style="color: red;">*</span>Start Date </label>
+                    <div class="slds-form-element__control">
+                        <input  class="slds-input" type="date"  name="Start Date" oninput={handleStartDate} pattern="\d{2}/\d{2}/\d{4}" placeholder="MM/DD/YYYY">
+                    </div>
+                </div> 
+           </div>
+            <div class="slds-col slds-size_1-of-2 hide-desktop ">
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="startDate"><span style="color: red;">*</span>End Date</label>
+                    <div class="slds-form-element__control">
+                        <input class="slds-input" type="date"  name="End Date" oninput={handleEndtDate} pattern="\d{2}/\d{2}/\d{4}" placeholder="MM/DD/YYYY">
+                    </div>
+                </div>  </div> 
+        </div> 
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col slds-size_1-of-2 ">
+                <lightning-textarea name="input1" label="Notes" value={note} onchange={handleNotesChange}></lightning-textarea>
+            </div>
+        </div>
+        <div class="slds-m-top_medium slds-text-align_center">
+            <template if:true={displayLeaveCardButton}>
+                <lightning-button label="Leave Request" variant="brand" onclick={insertRecord} class="slds-m-right_x-small"></lightning-button>
+            </template>
+            <lightning-button label="Cancel" variant="brand" onclick={handleCancel}></lightning-button>
+        </div>
+   </div>
+   <br/>
+   <template if:true={displayLeaveCards}>
+   <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-max-medium-table_stacked-horizontal">
+    <thead>
+        <tr class="slds-text-title_caps">
+            <th scope="col">
+                <div class="slds-truncate" title="Worker">Worker</div>
+            </th>
+            <th scope="col">
+                <div class="slds-truncate" title="Start Date">Start Date</div> 
+            </th>
+            <th scope="col">
+            <div class="slds-truncate" title="Day">Day</div> 
+            </th>
+            <th scope="col">
+                <div class="slds-truncate" title="Hours">Hours</div> 
+            </th>
+            <th scope="col">
+                <div class="slds-truncate" title="action">action</div> 
+            </th> 
+    </tr> </thead>
+    <tbody>
+    <tr for:each={timeoffRequest} for:item='recItem' key={rowId} for:index='index' class="slds-hint-parent">
+        <td data-label="Worker" class="CssWorker"><div class="slds-truncate CssWorker" title="Worker" >{workerName}</div></td>
+        <td data-label="Start Date"> <div class="slds-truncate" title="Start Date">{recItem.HRMSUS__Start_Date__c}</div></td>
+        <td data-label="Day"><div class="slds-truncate" title="Day">{recItem.HRMSUS__Sequence__c}</div></td>
+        <td data-label="Hours" class="hours-td"> <div class="slds-truncate" title="Hours">
+            <select onchange={handleChange} data-index={index} style="height: 30px; font-size: 14px; padding: 4px;">
+                <option value="1">1</option>
+                <option value="2">2 </option>
+                <option value="3">3</option>
+                <option value="4">4</option> 
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8" selected>8</option>
+            </select>
+           </div></td>
+        <td data-label="delete" > <lightning-button variant="destructive"   icon-name="utility:delete" title="Destructive action" data-index={index} onclick={handleDeleteRow} class="slds-m-left_x-small"></lightning-button>
+        </td>
+     </tr> </tbody>
+</table>  </template> 
+</lightning-card> <br/> 
+<lightning-card icon-name="standard:timesheet_entry" title="Leaves Entitled">
+    <div class="slds-card__body slds-card__body_inner"> 
+        <div class="slds">
+            <div class="slds-scrollable">
+    <table border="0" cellspacing="0" cellpadding="0" class="slds-table slds-table_bordered slds-table_cell-buffer slds-max-medium-table_stacked-horizontal" style="border-collapse:collapse;">
+        <thead>
+        <tr class="slds-text-title_caps">
+            <th scope="col" width="20%"><div class="slds-truncate" title="ABSENCE TYPE">ABSENCE TYPE</div></th>
+            <th scope="col" width="20%"><div class="slds-truncate" title="YEAR">YEAR</div></th>
+            <th scope="col" width="20%"><div class="slds-truncate" title="ALLOWED HOURS">ALLOWED HOURS</div></th>
+            <th scope="col" width="20%"><div class="slds-truncate" title="TAKEN HOURS">TAKEN HOURS</div></th>
+            <th scope="col" width="20%"><div class="slds-truncate" title="BALANCE HOURS">BALANCE HOURS</div></th>
+        </tr> </thead>
+        <tbody>
+        <tr for:each={entitlements} for:item='recItem' key={rowId} for:index='index' class="slds-hint-parent" >
+            <td data-label="Absence Type" width="20%">{recItem.HRMSUS__Absence_Type__r.Name}</td>
+            <td data-label="Year" width="20%">{recItem.HRMSUS__Year__c}</td>
+            <td data-label="Allowed Hours" width="20%">{recItem.HRMSUS__ToT_Allowed_Hours__c}</td>
+            <td data-label="Taken Hours" width="20%">{recItem.HRMSUS__Time_off_Taken_Hours__c}</td>
+            <td data-label="Balance Hours" width="20%">{recItem.HRMSUS__Time_off_Balance_Hours__c}</td>
+         </tr> </tbody>
+    </table>   </div>   </div>  </div> 
+</lightning-card>
+<br/> 
+<lightning-card icon-name="standard:call_history" title="Leave History">
+    <div class="slds-card__body slds-card__body_inner"> 
+        <div class="slds">
+            <div class="slds-scrollable">	
+    <table border="0" cellspacing="0" cellpadding="0" class="slds-table slds-table_bordered slds-table_cell-buffer slds-max-medium-table_stacked-horizontal" style="border-collapse:collapse;">
+        <thead>
+        <tr class="slds-text-title_caps">
+            <th scope="col" width="20%"><div class="slds-truncate" title="Leave Type">Leave Type</div></th>
+            <th scope="col" width="20%"><div class="slds-truncate" title="Start Date">Start Date</div></th>
+            <th scope="col" width="20%"><div class="slds-truncate" title="End Date">End Date</div></th>
+            <th scope="col" width="20%"><div class="slds-truncate" title="Total Hours">Total Hours</div></th>
+            <th scope="col" width="20%"><div class="slds-truncate" title="Status">Status</div></th>
+        </tr> </thead>
+        <tbody>
+        <tr for:each={leaveHistory} for:item='recItem' key={rowId} for:index='index' class="slds-hint-parent">
+            <td data-label="Leave Type" width="20%">{recItem.HRMSUS__Absence_Type__r.Name}</td>
+            <td  data-label="Start Date" width="20%">{recItem.HRMSUS__Start_Date__c}</td>
+            <td data-label="End Date" width="20%">{recItem.HRMSUS__End_Date__c}</td>
+            <td data-label="Total Hours" width="20%">{recItem.HRMSUS__Total_Absence_Requested__c}</td>
+            <td data-label="Status" width="20%">{recItem.HRMSUS__Approved__c}</td>
+         </tr> </tbody>
+    </table> </div>   </div>  </div> 
+</lightning-card>
+<!-- <lightning-card  title="Time Off Request" icon-name="standard:approval">
+    <div class="slds-m-around_medium">
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col">
+                <lightning-combobox name="workerList"
+                                    label="Select Worker"
+                                    value={selectedWorkerId}
+                                    options={workers}
+                                    onchange={handleWorkerChange}>
+                </lightning-combobox>
+            </div>
+            <div class="slds-col">
+                <lightning-combobox name="timeoffTypeList"
+                                    label="Time Off Type "
+                                    value={selectedTimeoffTypeId}
+                                    options={timeoffTypes}
+                                    onchange={handleTimeoffTypeChange}>
+                </lightning-combobox>
+            </div>
+        </div>
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col">
+                    <lightning-input  type="date" label="Start Date" required="true"  onchange={handleStartDate} ></lightning-input>
+                </div>
+                <div class="slds-col">
+                    <lightning-input  type="date" label="End Date" required="true"  onchange={handleEndDate} ></lightning-input>
+                </div>
+            </div>
+            <div class="slds-grid slds-wrap">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-textarea name="input1" label="Notes" ></lightning-textarea>
+                </div>
+            </div>
+                
+        <div class="slds-m-around_medium slds-text-align_center">
+            <lightning-button label="Time Off Request" onclick={insertRecords}></lightning-button>
+        </div>
+    </div>
+ </lightning-card> -->
+</template>

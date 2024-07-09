@@ -1,0 +1,79 @@
+<template>  
+   <!--<template if:true={isLoading}>
+        <div class="slds-spinner_container">
+            <lightning-spinner variant="brand" size="medium" alternative-text="Loading"></lightning-spinner>
+        </div>
+    </template> -->
+    <div class="spinner">
+        <template if:true={isLoading}>
+             <lightning-spinner alternative-text="Loading" variant="brand" size="large">
+             </lightning-spinner>
+        </template>
+    </div>
+
+    <div class="slds-box">
+        <div class="slds-text-align_center slds-media__body slds-text-heading_small">
+            <b>Worker Entitlement</b>
+        </div>
+    </div>
+    <div class="slds-box">
+        <div class="slds-grid slds-wrap">
+            <div class="slds-p-right_x-small slds-col slds-size--1-of-1 slds-medium-size--3-of-6 slds-large-size--4-of-12">
+                <lightning-combobox label="Location" placeholder="Select a location" options={locationOptions} onchange={handleLocationChange}></lightning-combobox> 
+                <lightning-input type="date" label="Start Date" value={startDate} onchange={handleStartDateChange}></lightning-input>
+            </div>
+            <div class="slds-p-right_x-small slds-col slds-size--1-of-1 slds-medium-size--3-of-6 slds-large-size--4-of-12">
+                <lightning-combobox label="Department" placeholder="Select a departments" options={departmentOptions} onchange={handledepartmentChange}></lightning-combobox>
+                <lightning-input type="date" label="End Date" value={endDate} onchange={handleEndDateChange}></lightning-input>
+            </div>
+        </div>
+    </div>
+
+    <div class="slds-box">
+        <div class="slds-media__body">
+            <b>Workers</b>
+        </div>
+        <table class="slds-table slds-table_bordered slds-table_striped slds-table_cell-buffer slds-table_fixed-layout slds-max-medium-table_stacked-horizontal">
+            <thead>
+                <tr class="slds-text-heading_label">
+                    <th>
+                        <lightning-input type="checkbox" label="Select All" data-id="selectAllId" onchange={selectAllCheckbox}></lightning-input>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Name">Worker</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Name">Time Off Type</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Action">Allowed Hours</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <!--<template for:each={employees} for:item="con"  for:index="wrpidx">-->
+                    <tr for:each={employees} for:item="con" key={con.Id} for:index='index'>
+                        <td>
+                            <lightning-input  type="checkbox" label={con.name} data-index={index} data-id={con.Id} data-typeid={con.typeId} checked={con.check} onchange={checkboxSelect}></lightning-input>
+                          <!-- <lightning-input type="checkbox" data-id={con.Id} data-index={index} class="left"  checked={con.isSelected} onchange={handleCheckboxSelect}></lightning-input> --> 
+                        </td>
+                        <td scope="row">
+                            <lightning-formatted-text data-index={index} data-id={con.Id} value={con.Name}></lightning-formatted-text>
+                        </td>
+                        <td data-label="Name">
+                            <lightning-formatted-text data-index={index} data-id={con.Id} value={con.typeName}></lightning-formatted-text>
+                        </td>
+                        <td data-label="Name">
+                            <lightning-input label={wrpidx} data-index={index} data-id={con.Id} value={con.hours} variant="label-hidden" onchange={handleHoursChange}></lightning-input>
+                        </td>
+                    </tr>
+                <!--/template -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="slds-align_absolute-center">
+        <lightning-button variant="brand" label="Save" onclick={saveWorkers}></lightning-button> &nbsp;
+        <lightning-button variant="neutral" label="Cancel" onclick={handleCancel}></lightning-button>
+    </div>
+</template>

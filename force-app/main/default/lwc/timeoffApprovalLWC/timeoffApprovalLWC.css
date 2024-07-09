@@ -1,0 +1,19 @@
+.modelpopup > section > .slds-modal__container {	
+    max-height: 100%;
+    position: fixed;
+    height: auto;    
+	margin-top: 10%;
+    
+    overflow-y: scroll; 
+    width: 80% !important;
+	max-width: 80% !important;
+   
+    -webkit-overflow-scrolling: touch;
+   
+}
+.slds-page-header__title { 
+	color: #1b5194;
+}
+.width50{
+    width : 40%;
+}

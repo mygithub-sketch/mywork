@@ -1,0 +1,161 @@
+<!-- timeOffApprovalLWC.html -->
+<template>
+    <!-- Main Lightning Card for Time Off Request Approvals -->
+    <!--<template if:false={hidedetails}>-->
+    <lightning-card title="Time Off Request Approvals" icon-name="action:approval">
+        <!-- Buttons for switching views -->
+        <div class="slds-align_absolute-center">
+            <lightning-button variant="brand" label="Work Center" title="Work Center" onclick={handleClick}></lightning-button>
+            &nbsp;&nbsp;<lightning-button variant="brand" label="Calendar view" onclick={handleClick}></lightning-button>
+        </div><br/>
+
+        <!-- Table for displaying time off request approvals -->
+        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-max-medium-table_stacked-horizontal">
+            <thead>
+                <tr class="slds-text-title--caps">
+                    <th>Worker</th>
+                    <th>Leave Type</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Total Hours</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <template for:each={getlistrequests} for:item='recItem' for:index='index'>
+                    <tr key={recItem.id}>
+                      <!-- th data-label="Worker">href="/"+{recItem.Id}
+                       <a class="slds-truncate" href="/"+{recItem.HRMSUS__Worker__c} href={recItem.HRMSUS__Worker__c}>{!recItem.HRMSUS__Worker__r.HRMSUS__Associate_Name__c}</a>
+                        </th>-->
+                        <!--<td>
+                        <lightning-tile
+                        label={recItem.HRMSUS__Worker__r.HRMSUS__Associate_Name__c}
+                        href={recItem.Url}>
+                     </lightning-tile>
+                     </td>-->
+                        <td data-label="Worker">{recItem.HRMSUS__Worker__r.HRMSUS__Associate_Name__c}</td>
+                        <td data-label="Leave Type">{recItem.HRMSUS__Absence_Type__r.Name}</td>
+                        <td data-label="Start Date">{recItem.HRMSUS__Start_Date__c}</td>
+                        <td data-label="End Date">{recItem.HRMSUS__End_Date__c}</td>                       
+                        <td data-label="Total Hours" >{recItem.HRMSUS__Total_Absence_Requested__c}</td>
+                       <td data-label="Status">{recItem.HRMSUS__Approved__c}</td>
+                        <td data-label="Action">
+                            <lightning-button variant="brand" label="Details"   data-item={recItem} title="Details" icon-position="right" onclick={openModalBox} value={index}></lightning-button>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </lightning-card>  
+<!--</template>--> 
+
+        <!-- Modal for displaying details -->
+        <template if:true={showForm}>
+            <div class="slds-no-flex">
+                <!-- Your existing modal code -->
+                <div class="slds-card">
+                    <div class="slds-p-around_medium">
+                        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_large">
+                            <div class="slds-modal__container">
+                                <header class="slds-modal__header">
+                                    <div class="slds-page-header">
+                                         <div class="slds-page-header__row">
+                                             <div class="slds-page-header__col-title">
+                                                 <div class="slds-media">                                                                                                        
+                                                       <div  class="slds-media__body">
+                                                         <h1 class="slds-page-header__title slds-truncate slds-align-middle" 
+                                         title="Approvals">Time Off request approvals</h1> 
+                                          <span class="slds-assistive-text">Time Off Request Apporval/Rejection</span>
+                                                     </div>
+                                                     </div> 
+                                             </div>
+                                         </div>
+                                     </div>
+                                     <p class="slds-page-header__name-meta">{recItem.HRMSUS__Worker__r.HRMSUS__Associate_Name__c}</p>                                                    
+                              </header>
+                                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                    <div class="slds-align_absolute-center">
+                                        <lightning-button variant="brand" label="Approve" icon-name="utility:check" onclick={handleApprove}></lightning-button>
+                                        &nbsp;&nbsp;<lightning-button variant="brand" label="Reject"  icon-name="utility:close" title="Reject" onclick={handleReject}></lightning-button>
+                                        &nbsp;&nbsp;<lightning-button variant="brand" label="Cancel" title="Cancel" onclick={hideModalBox}></lightning-button>
+                                    </div>
+                                    <div class="c-container">
+                                    <lightning-layout multiple-rows="true">
+                                        <lightning-layout-item size="12" small-device-size="6" medium-device-size="4" large-device-size="3" padding="around-small">
+                                            <div>
+                                                <p class="field-title" title="Worker">Worker</p>
+                                                {recItem.HRMSUS__Worker__r.HRMSUS__Associate_Name__c}
+                                            </div>
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="12" small-device-size="6" medium-device-size="4" large-device-size="3" padding="around-small">
+                                            <div class="slds-form-element_compound">
+                                                <p class="slds-truncate" title="Leave Type">Leave Type</p>
+                                                {recItem.HRMSUS__Absence_Type__r.Name}
+                                            </div>
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="12" small-device-size="6" medium-device-size="4" large-device-size="3" padding="around-small">
+                                            <div class="slds-form-element_compound">
+                                                <p class="slds-truncate" title="Start Date">Start Date</p>
+                                                {recItem.HRMSUS__Start_Date__c}
+                                            </div>
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="12" small-device-size="6" medium-device-size="4" large-device-size="3" padding="around-small">
+                                            <div class="custom-box">
+                                                <div class="slds-form-element_compound">
+                                                    <p class="field-title" title="Total">Total Hours</p>
+                                                    {recItem.HRMSUS__Total_Absence_Requested__c}
+                                                </div>
+                                            </div>
+                                        </lightning-layout-item>
+                                        <!-- Add more fields as needed -->
+                                        <lightning-layout-item size="12" small-device-size="6" medium-device-size="4" large-device-size="3" padding="around-small">
+                                            <div class="slds-form-element_compound">
+                                                <p class="field-title" title="End Date">End Date</p>
+                                                {recItem.HRMSUS__End_Date__c}
+                                            </div>
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="12" small-device-size="6" medium-device-size="4" large-device-size="3" padding="around-small">
+                                            <div class="slds-form-element_compound">
+                                                <p class="field-title" title="Comments">Comments</p>
+                                                <lightning-input class="inputWidth" type="text" value={recItem.HRMSUS__Rejection_Comments__c}></lightning-input>
+                                            </div>
+                                        </lightning-layout-item>
+                                    </lightning-layout>
+                                    </div>
+
+                                    <!-- Leave History card -->
+                                    <lightning-card >
+                                    <!-- Table for displaying leave history -->
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-max-medium-table_stacked-horizontal">
+                             <thead>
+                                <tr>
+                                    <th>Leave Type</th>
+                                    <th>Year</th>
+                                    <th>Time off Allowed Hours</th>
+                                    <th>Time off taken Hours</th>
+                                    <th>Time off balance hours</th>
+                                </tr>
+                             </thead>
+                      <!--<tbody>
+                       <template for:each={getlistentitlements} for:item='recItems' for:index='indexs'>
+                       <tr key={recItems.Id}>
+                        <td data-label="Leave Type">{recItems.HRMSUS__Absence_Type__r.Name}</td>
+                        <td data-label="Year">{recItems.HRMSUS__Year__c}</td>
+                        <td data-label="Time off Allowed Hours">{recItems.HRMSUS__ToT_Allowed_Hours__c}</td>
+                        <td data-label="Time off Taken Hours">{recItems.HRMSUS__Time_off_Taken_Hours__c}</td>
+                        <td data-label="Time off balance hours">{recItems.HRMSUS__Time_off_Balance_Hours__c}</td>
+                    </tr>
+                </template>
+            </tbody>-->
+        </table>
+    </lightning-card>
+    </div>                                
+  </div>
+  </section>
+ </div>
+</div>
+</div>             
+</template>
+ 
+</template>

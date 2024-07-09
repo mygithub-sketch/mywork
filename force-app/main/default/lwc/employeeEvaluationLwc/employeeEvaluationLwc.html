@@ -1,0 +1,131 @@
+<template>
+    <lightning-card title="Performance Evaluation" >
+        <lightning-record-edit-form record-id={recordId} object-api-name="HRMSUS__Performance__c">
+            <!--<p>Record ID: {recordId}</p>-->
+
+       <center> <lightning-button variant="brand" label="Performance Summary" title="Performance Summary" onclick={handleClick}></lightning-button>
+                &nbsp;<lightning-button variant="brand" label="Cancel" title="Cancel" onclick={handleClick}></lightning-button></center>
+                <lightning-tabset>
+                <lightning-tab label="Performance" value="Performance">
+                    <center> <lightning-button variant="brand" label="Save" title="Save" onclick={handleClick}></lightning-button> </center>
+                    <lightning-accordion  active-section-name="Performanceevaluation">
+                        
+                        <lightning-accordion-section name="A" label="Performance Information" onsectiontoggle={handleSectionToggle}>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col">
+                                    <lightning-output-field field-name="HRMSUS__Worker__c" ></lightning-output-field>
+                                </div>
+                                <div class="slds-col">
+                                    <lightning-output-field field-name="HRMSUS__Supervisor__c" ></lightning-output-field>
+                                </div>
+                                
+                              </div>
+                              <div class="slds-grid slds-gutters">
+                                <div class="slds-col">
+                                    <lightning-output-field field-name="HRMSUS__EmpName__c" ></lightning-output-field>
+                                </div>
+                                <div class="slds-col">
+                                    <lightning-output-field field-name="HRMSUS__Manager__c" label="Manager Name"></lightning-output-field>
+                                </div>
+                              
+                              </div>
+                              <div class="slds-grid slds-gutters">
+                                <div class="slds-col">
+                                    <lightning-output-field field-name="HRMSUS__Recieved_Evaluation__c" ></lightning-output-field>
+                                </div>
+                                <div class="slds-col">
+                                    <lightning-output-field field-name="HRMSUS__Review_Start_Date__c" ></lightning-output-field>
+                                </div>
+                              
+                              </div>
+                              <div class="slds-grid slds-gutters">
+                                <div class="slds-col">
+                                    <lightning-output-field field-name="HRMSUS__Associate_Confirmation__c" ></lightning-output-field>
+                                </div>
+                                <div class="slds-col">
+                                    <lightning-output-field field-name="HRMSUS__Review_End_Date__c" ></lightning-output-field>
+                                </div>
+                              
+                              </div>
+                              <div class="slds-grid slds-gutters">
+                                <div class="slds-col">
+                                    <lightning-output-field field-name="HRMSUS__Review_Status__c" ></lightning-output-field>
+                                </div>
+                                <div class="slds-col">
+                                    <lightning-output-field field-name="HRMSUS__Completion_Date__c" ></lightning-output-field>
+                                </div>
+                              
+                              </div>
+                              <div class="slds-grid slds-gutters">
+                                <div class="slds-col">
+                                    <lightning-output-field field-name="HRMSUS__Sent_to_HR__c" ></lightning-output-field>
+                                </div>
+                                
+                              
+                              </div>
+                             </lightning-accordion-section>
+                    </lightning-accordion>
+                        <lightning-accordion active-section-name="OverallEvaluationComments">
+                        <lightning-accordion-section name="B" label="Overall Evaluation Comments">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col">
+                                    <lightning-input-field field-name="HRMSUS__Manager_Comments__c" ></lightning-input-field>
+                                </div>
+                                </div></div>
+                                <div class="slds-grid slds-gutters">
+                                <div class="slds-col">
+                                    <lightning-input-field field-name="HRMSUS__Associate_Comment__c" ></lightning-input-field>
+                                </div></div>
+                                
+                              
+                            </lightning-accordion-section>
+                        </lightning-accordion>
+                          <lightning-accordion active-section-name="SignatureInformation">
+                            <lightning-accordion-section name="C" label="Signature Information">
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col">
+                                        <lightning-output-field field-name="HRMSUS__Worker_Signature__c" ></lightning-output-field>
+                                    </div>
+                                    <div class="slds-col">
+                                        <lightning-output-field field-name="HRMSUS__ManagerSignature__c" ></lightning-output-field>
+                                    </div>
+                                  
+                                  </div>
+                                  <div class="slds-grid slds-gutters">
+                                    <div class="slds-col">
+                                        <lightning-output-field field-name="HRMSUS__Worker_Sign_Date__c" ></lightning-output-field>
+                                    </div>
+                                    <div class="slds-col">
+                                        <lightning-output-field field-name="HRMSUS__Manager_Sign_Date__c" ></lightning-output-field>
+                                    </div>
+                                  
+                                  </div>
+                                </lightning-accordion-section>
+                            </lightning-accordion>
+                       
+                </lightning-tab>
+                  <lightning-tab label="Goals" value="Goals">
+                    <lightning-card title="Goal Information">
+                    <center><lightning-button variant="brand" label="Save" title="Save" onclick={handleClick}></lightning-button>
+                    &nbsp;<lightning-button variant="brand" label="New Goal" title="New Goal" onclick={navigateWithoutAura}></lightning-button></center>
+                    &nbsp;<lightning-button variant="brand" label="Edit Goal" title="Edit Goal" onclick={navigateTOEditGoal}></lightning-button>
+                   
+                        </lightning-card>
+               
+               
+               
+                </lightning-tab>
+                <lightning-tab label="Competency" value="Competency">
+                    <lightning-button variant="brand" label="Save" title="Save" onclick={handleClick}></lightning-button></lightning-tab>
+                <lightning-tab label="Strengths" value="Strengths">
+                    <lightning-button variant="brand" label="Add Strength" title="Add Strength" onclick={handleClick}></lightning-button>
+                        &nbsp;<lightning-button variant="brand" label="Save" title="Save" onclick={handleClick}></lightning-button></center>
+                </lightning-tab>
+                <lightning-tab label="Careers" value="Careers">
+                     <lightning-button variant="brand" label="Add Career" title="Add Career" onclick={handleClick}></lightning-button>
+                        &nbsp;<lightning-button variant="brand" label="Save" title="Save" onclick={handleClick}></lightning-button></center>
+                </lightning-tab>
+                </lightning-tabset>   
+            </lightning-record-edit-form>
+        </lightning-card>
+</template>

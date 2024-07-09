@@ -1,0 +1,79 @@
+<template>
+    <lightning-card title="New Goal & Milestones">
+        <lightning-accordion active-section-name="GoalDetails">
+            <lightning-accordion-section name="GoalDetails" label="Goal Information" onsectiontoggle={handleSectionToggle}>    
+        <div class="slds-grid slds-wrap">
+            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                <lightning-input label="Goal Name" value={goal.Name} data-field="Name" onchange={handleInputChange} required></lightning-input>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                <lightning-input label="Performance" value={goal.HRMSUS__Performance_Name} disabled></lightning-input>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                <lightning-input label="Goal Description" value={goal.HRMSUS__Goal_Description__c} data-field="HRMSUS__Goal_Description__c" onchange={handleInputChange}></lightning-input>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                <lightning-input label="Worker" value={goal.HRMSUS__Worker_Name} disabled></lightning-input>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                <lightning-combobox label="Status" value={goal.HRMSUS__Status__c} data-field="Status__c" options={statusOptions} onchange={handleInputChange} required></lightning-combobox>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                <lightning-input label="Manager" value={goal.HRMSUS__Manager__Name} disabled></lightning-input>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                <lightning-input label="Worker Comments" value={goal.HRMSUS__Employee_Comments__c} data-field="HRMSUS__Employee_Comments__c" onchange={handleInputChange}></lightning-input>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                <lightning-input label="Manager Comments" value={goal.HRMSUS__Manager_Comments__c} data-field="HRMSUS__Manager_Comments__c" onchange={handleInputChange}></lightning-input>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                <lightning-input label="Start Date" type="date" value={goal.HRMSUS__Start_Date__c} data-field="HRMSUS__Start_Date__c" onchange={handleInputChange} required></lightning-input>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                <lightning-input label="Due Date" type="date" value={goal.HRMSUS__Due_Date__c} data-field="HRMSUS__Due_Date__c" onchange={handleInputChange} required></lightning-input>
+            </div>  
+            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                <lightning-combobox label="Worker Rating" value={goal.HRMSUS__Employee_Rating__c} data-field="HRMSUS__Employee_Rating__c" options={RatingOptions} onchange={handleInputChange} ></lightning-combobox>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                <lightning-combobox label="Manager Rating	" value={goal.HRMSUS__Manager_Rating__c} data-field="HRMSUS__Manager_Rating__c" options={RatingOptions} onchange={handleInputChange} ></lightning-combobox>
+            </div>          
+        </div> 
+        </lightning-accordion-section> 
+        <template for:each={milestones} for:item="milestone" for:index="index">
+            <lightning-accordion-section key={milestones.id} name={milestones.name} label="Milestones Information">
+            <div key={milestone.Id} class="slds-grid slds-wrap">
+                <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                    <lightning-input label="Milestone Name" value={milestone.Name} data-field="Name" data-index={index} onchange={handleMilestoneInputChange} required></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                    <lightning-input label="Milestone Description" value={milestone.HRMSUS__Milestone_Description__c} data-field="HRMSUS__Milestone_Description__c" data-index={index} onchange={handleMilestoneInputChange}></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                    <lightning-input label="Start Date" type="date" value={milestone.HRMSUS__Start_Date__c} data-field="HRMSUS__Start_Date__c" data-index={index} onchange={handleMilestoneInputChange} required></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                    <lightning-input label="Due Date" type="date" value={milestone.HRMSUS__Due_Date__c} data-field="HRMSUS__Due_Date__c" data-index={index} onchange={handleMilestoneInputChange} required></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                    <lightning-combobox label="Status" value={milestone.HRMSUS__Status__c} data-field="HRMSUS__Status__c" data-index={index} options={goalStatusOptions} onchange={handleMilestoneInputChange}></lightning-combobox>
+                </div>
+                <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                    <lightning-input label="Employee Comments" value={milestone.HRMSUS__Employee_Comments__c} data-field="HRMSUS__Employee_Comments__c" data-index={index} onchange={handleMilestoneInputChange}></lightning-input>
+                </div>
+            </div>
+        </lightning-accordion-section>
+        </template>
+    </lightning-accordion>
+        <div class="slds-m-top_medium">
+            <center>
+                <div class="slds-m-top_medium">
+                    <lightning-button class="slds-m-right_small" label="Save" onclick={handleSave}></lightning-button>
+                    <lightning-button class="slds-m-right_small" label="Cancel" onclick={navigateWithoutAura}></lightning-button>
+                    <lightning-button label="Add Milestone" onclick={addMilestone}></lightning-button>
+                </div>
+            </center>
+        </div>
+    </lightning-card>
+</template>

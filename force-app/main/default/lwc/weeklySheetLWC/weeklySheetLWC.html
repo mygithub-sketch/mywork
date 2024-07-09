@@ -1,0 +1,328 @@
+<template>
+    <lightning-card> 
+        <div class="slds-page-header">
+            <div class="slds-media">
+                <div class="slds-media__figure">
+                    <img src={timeSheetIcon} alt="Time Sheet" width="30" height="30" />
+                </div>
+                <div class="slds-media__body">
+                    <h1 class="slds-page-header__title slds-truncate slds-align-middle" style="color: #009ddc;" title="Daily Time Sheet">
+                        Time Sheet
+                    </h1>
+                </div>
+            </div>
+        </div>
+    </lightning-card> 
+    <lightning-card >
+        <template if:true={showPage}> 
+        <button class="slds-button slds-button_brand" onclick={handleSave} >Daily Sheet</button>
+        <button class="slds-button slds-button_brand">Time Tracker</button>
+        <button class="slds-button slds-button_success">Approve</button>
+        <button class="slds-button slds-button_destructive">Reject</button>
+        <button class="slds-button slds-button_brand">Clone to Next Week</button>
+        <button class="slds-button slds-button_brand">Submit For Approval</button>
+        <button class="slds-button slds-button_brand" onclick={handleWeeklyEntry} >Edit Time Sheet</button>
+    </template>
+    <template if:false={showPage}>
+        <button class="slds-button slds-button--brand"  onclick={saveRecord}>Save</button>
+        <button class="slds-button slds-button--brand" onclick={cloneAction}>Clone to Next Week</button>
+        <button class="slds-button slds-button--brand" onclick={viewTime}>View Time Sheets</button>                               
+    </template>
+    </lightning-card>
+    <lightning-card >
+        
+    <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal">
+        <tbody>
+            <tr class="slds-text-title_caps">
+                <td class="slds-cell-buffer_left">
+                    <lightning-combobox name="selectItem" label="Worker" value={selectedWorkerId}
+                                               required=true onchange={handleworker} options={workers} dropdown-alignment="left"></lightning-combobox>
+                
+                </td>
+                <td class="slds-cell-buffer_left">
+                    <lightning-input type="date" label="Date" value={selectedDate} onchange={handleChangeDate}></lightning-input>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <template if:true={showPage}>
+    <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal">
+        <!-- ################COLUMN HEADINGS OF THE TABLE ################ -->
+        <thead>
+            <tr class="slds-text-title_caps">
+                <template for:each={weekDayTable} for:item="w">
+                    <th key={w} scope="col">
+                        <div title={w} class="slds-truncate" data-timezone={timezone}>{w}</div>
+                    </th>
+                </template>
+            </tr>
+        </thead>
+        <tbody>
+        <template for:each={timesheets} for:item="ts" for:index="idx">
+            <tr key={ts.Id} class="slds-text-title">
+                <template if:true={custSettings.HRMSUS__Customer__c}>
+                    <td data-label="Customer">
+                        <div class="slds-truncate">
+                            <lightning-record-view-form record-id={ts.HRMSUS__Customer__c} object-api-name="Account">
+                                <lightning-output-field field-name="Name" variant="label-hidden"></lightning-output-field>
+                            </lightning-record-view-form>
+                        </div>
+                    </td>
+                </template>
+                <td data-label="Project">
+                    <div class="slds-truncate">
+                        <lightning-record-view-form record-id={ts.HRMSUS__Project_Name__c} object-api-name="HRMSUS__Projects__c">
+                            <lightning-output-field field-name="Name" variant="label-hidden"></lightning-output-field>
+                        </lightning-record-view-form>
+                    </div>
+                </td>
+                <td data-label="Task">
+                    <div class="slds-truncate">
+                        <lightning-record-view-form record-id={ts.HRMSUS__Project_Task__c} object-api-name="HRMSUS__Tasks__c">
+                            <lightning-output-field field-name="Name" variant="label-hidden"></lightning-output-field>
+                        </lightning-record-view-form>
+                    </div>
+                </td>
+        
+                <template for:each={ts.WeekSheets} for:item="hrs">
+                    <td key={hrs.Key} data-label={hrs.Key}>
+                        <div class="slds-truncate">
+                            <div class="slds-text-align_left">
+                                <span class="custom-color">{hrs.Value}</span>
+                            </div>
+                        </div>
+                    </td>
+                </template>
+        
+                <template if:true={custSettings.HRMSUS__Billable__c}>
+                    <td data-label="Billable">
+                        <span class="slds-checkbox">
+                            <lightning-input type="checkbox" class="slds-output slds-align_absolute-center" checked={ts.HRMSUS__Billable__c} disabled></lightning-input>
+                        </span>
+                    </td>
+                </template>
+        
+                <td data-label="Total">
+                    <div class="slds-truncate">
+                        <div class="alignRightTotal">{ts.HRMSUS__Total__c}</div>
+                    </div>
+                </td>
+        
+                <td data-label="Comments" >
+                    <div class="alignRightTotal">
+                        <lightning-formatted-text value={ts.HRMSUS__Comments__c}></lightning-formatted-text>
+                    </div>
+                </td>
+                <td data-label="Action">
+                    <div class="slds-truncate"> 
+                            <lightning-button-icon icon-name="utility:comments" variant="bare" size="large" onclick={addCommsToWk} value={ts}></lightning-button-icon>
+                            <lightning-button-icon icon-name="utility:delete" variant="bare" icon-class="red"  onclick={delRow} value={idx} size="large"></lightning-button-icon>
+                    </div>
+                </td>
+            </tr>
+        </template>
+    </tbody>
+    <tfoot>
+        <tr><td colspan="12"></td> <br/></tr>
+      <tr><td colspan="3">&nbsp;</td>  
+           <td  data-label="Total Sun" >
+              <div  >
+                   <p>{totalMon}</p>
+               </div>
+           </td>
+           <td   data-label="Total Mon" >
+           <div >
+               <p>{totalTuse}</p>
+           </div>
+       </td>
+       <td   data-label="Total Tue">
+           <div >
+               <p>{totalWednes}</p>
+           </div>
+       </td>
+       <td   data-label="Total Wed">
+           <div >
+               <p>{totalThurs}</p>
+           </div>
+       </td>
+       <td   data-label="Total Thu">
+           <div >
+               <p>{totalFri}</p>
+           </div>
+       </td>
+       <td   data-label="Total Fri">
+           <div  >
+               <p>{totalSatur}</p>
+           </div>
+       </td>
+       <td   data-label="Total Sat">
+           <div  >
+               <p>{totalSun}</p>
+           </div>
+       </td>
+       <td ></td>
+       <td data-label="Total Full">
+        <div class="slds-text-align_left">
+            <p>{totalHours}</p>
+        </div>
+    </td>
+       </tr> 
+       </tfoot>
+    </table>
+    </template>
+    <template if:false={showPage}>   
+    <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal">
+        <!-- ################COLUMN HEADINGS OF THE TABLE ################ -->
+        <thead>
+            <tr class="slds-text-title_caps">
+                <template for:each={weekDayTable} for:item="w">
+                    <th key={w} scope="col">
+                        <div title={w} class="slds-truncate" data-timezone={timezone}>{w}</div>
+                    </th>
+                </template>
+            </tr>
+        </thead>
+        <tbody>
+        <template for:each={timesheets} for:item="ts" for:index="index">
+                <template if:true={ts.values}>
+                    <tr key={ts.Id} class="slds-text-title_caps" >
+                        <template if:true={custSettings.HRMSUS__Customer__c}>
+                            <td data-label="Customer">
+                                <div class="slds-text-body_small">
+                                    <c-custom-lookup-l-w-c   icon-name="standard:account" 
+                                                    s-object-api-name="Account"
+                                                    label-hidden="true"  placeholder="Search..."
+                                                    where=" Name != null" data-index={index}
+                                                    initial-lookup-value= {ts.HRMSUS__Customer__c}
+                                                    selectedrecords = {ts.HRMSUS__Customer__r}
+                                                    onlookupupdate ={lookupRecord} >
+                                    </c-custom-lookup-l-w-c>                              
+                                </div>
+                            </td>
+                        </template>
+                        <td data-label="Project">
+                            <div class="slds-text-body_small">
+                                <c-custom-lookup-l-w-c icon-name="standard:orders"
+                                                    s-object-api-name="HRMSUS__Projects__c"
+                                                    label-hidden="true" 
+                                                    initial-lookup-value = {ts.HRMSUS__Project_Name__c}
+                                                    selectedrecords = {ts.HRMSUS__Project_Name__r}
+                                                    placeholder="Search..."  data-index={index}
+                                                    onlookupupdate ={lookupRecordProject}                       
+                                                    where = "HRMSUS__Account__c = "
+                                                    condition = {ts.HRMSUS__Customer__c}>
+                                </c-custom-lookup-l-w-c>
+                               
+                            </div>
+                        </td> 
+                        <td data-label="Task">
+                            <div class="slds-text-body_small">
+                                <c-custom-lookup-l-w-c  icon-name="standard:orders"
+                                                s-object-api-name="HRMSUS__Tasks__c"
+                                                label-hidden="true" data-index={index}
+                                                initial-lookup-value = {ts.HRMSUS__Project_Task__c}
+                                                selectedrecord = {ts.HRMSUS__Project_Task__r}
+                                                onlookupupdate ={lookupRecordTask}
+                                                where= "HRMSUS__Project__c = " 
+                                                condition = {ts.HRMSUS__Project_Name__c}
+                                                placeholder="Search...">
+                                </c-custom-lookup-l-w-c>  
+                            </div>
+                        </td>
+                        <template for:each={ts.WeekSheets} for:item="hrs" for:index="hrInd">
+                            <td key={hrs.Key} data-label={hrs.Key} class="dayHeaderAlign" id={hrInd}>
+                                <div class="slds-truncate inputSize">
+                                    <lightning-input class="inputdayhours" value={hrs.Value} type="number"   data-id={hrInd}
+                                                     data-index={index}  onchange={handleChangedHours} message-when-range-overflow="Invalid"
+                                                     message-when-range-underflow="Invalid" step="0.01">
+                                    </lightning-input>
+                                </div>
+                            </td>
+                        </template>
+
+                <template if:true={custSettings.HRMSUS__Billable__c}>
+                    <td data-label="Billable">
+                        <span class="slds-checkbox">
+                            <lightning-input type="checkbox" class="slds-output slds-align_absolute-center" checked={ts.HRMSUS__Billable__c} disabled></lightning-input>
+                        </span>
+                    </td>
+                </template>
+        
+                <td data-label="Total">
+                    <div class="slds-truncate">
+                        <div class="alignRightTotal">{ts.HRMSUS__Total__c}</div>
+                    </div>
+                </td>
+        
+                <td data-label="Comments" >
+                    <div class="alignRightTotal">
+                        <lightning-textarea type="text" variant="label-hidden" label="Comments" name="Comments" value={ts.HRMSUS__Comments__c} data-id={ts.Id} data-index={index} onchange={updateComments}></lightning-textarea>
+                    </div>
+                </td>
+                <td data-label="Add">
+                    <div class="slds-truncate"> 
+                      <lightning-icon class="my-add" icon-name="utility:description" data-index={index} size="Small" onclick={updateCommentsBox}></lightning-icon> 
+                    </div>
+                </td>
+                <td data-label="Action">
+                    <div class="slds-truncate"> 
+                        <lightning-icon  class="my-comments" icon-name="utility:comments" title="comments" data-index={index} size="Small"  onclick={addCommsToWk}></lightning-icon> 
+                        <lightning-icon icon-name="utility:delete" title="Delete"  variant="error" data-index={index} icon-variant="error"  size="Small"  onclick={delRow}></lightning-icon>
+                    </div>
+                </td>
+            </tr>
+        </template>
+    </template>
+    </tbody>
+    <tfoot>
+     <tr>
+        <td colspan="3">&nbsp;</td>  
+        <td  data-label="Total Sun" >
+            <!--commented divstyle for every days and update class="alignRightTotal" by Mohd. Rehman on 27-06-2023 for mobile view (values overlap)-->
+            <!--div style="position:absolute; top: 6px;left: 17px;" class="totalHoursAlign slds-text-align_right" -->
+            <div  >
+                <p>{totalMon}</p>
+            </div>
+        </td>
+        <td   data-label="Total Mon" >
+        <div >
+            <p>{totalTuse}</p>
+        </div>
+    </td>
+    <td   data-label="Total Tue">
+        <div >
+            <p>{totalWednes}</p>
+        </div>
+    </td>
+    <td   data-label="Total Wed">
+        <div >
+            <p>{totalThurs}</p>
+        </div>
+    </td>
+    <td   data-label="Total Thu">
+        <div >
+            <p>{totalFri}</p>
+        </div>
+    </td>
+    <td   data-label="Total Fri">
+        <div  >
+            <p>{totalSatur}</p>
+        </div>
+    </td>
+    <td   data-label="Total Sat">
+        <div  >
+            <p>{totalSun}</p>
+        </div>
+    </td>
+    <td ></td>
+       <td data-label="Total Full">
+        <div class="slds-text-align_left">
+            <p>{totalHours}</p>
+        </div>
+    </td>
+    </tr> 
+    </tfoot>
+    </table>
+</template>
+</lightning-card>
+</template>

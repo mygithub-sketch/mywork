@@ -1,0 +1,40 @@
+<template>
+    <lightning-card title="Time Off Entitlements" icon-name="standard:contact">
+        <table border="0" cellspacing="0" cellpadding="0" class="slds-table slds-table_bordered slds-table_col-bordered" style="border-collapse:collapse;">
+            <thead>
+            <tr>
+                <th>
+                    <lightning-input type="checkbox" data-id="headerCheckbox" onchange={handleHeaderChange}></lightning-input>
+                </th>
+                <th><strong>Time Off Types</strong></th>
+                <th><strong>Start Date</strong></th>
+                <th><strong>End Date</strong></th>
+                <th><strong>Allowed Hours</strong></th>               
+            </tr>
+        </thead>
+        <tbody>
+            <tr for:each={timeOffList} for:item='recItem' key={rowId} for:index='index' >
+                
+                <td>
+                    <lightning-input type="checkbox" data-id={recItem.Id} checked={recItem.isSelected} onchange={handleChange}></lightning-input>
+                </td>
+                <td>{recItem.Name}</td>
+                <td>
+                    <lightning-input type="date" value={recItem.HRMSUS__Time_Off_Start__c} data-id={recItem.Id} onchange={handleStartDateChange}></lightning-input>
+                </td>
+                <td>
+                    <lightning-input type="date" value={recItem.HRMSUS__Time_Off_End__c} data-id={recItem.Id} onchange={handleEndDateChange}></lightning-input>
+                </td>
+                <td>
+                    <lightning-input type="number" value={recItem.HRMSUS__Available_Hours__c} data-id={recItem.Id} onchange={handleNumberChange}></lightning-input>
+                </td>            
+                </tr>
+                
+            </tbody>
+        </table>                        
+            <div class="slds-m-top_medium slds-align_absolute-center">                
+                    <lightning-button label="Save" onclick={handleSave} variant="brand"></lightning-button>  &nbsp;                             
+                    <lightning-button label="Cancel" onclick={handleCancel} variant="neutral"></lightning-button>                
+            </div>             
+    </lightning-card>
+ </template>

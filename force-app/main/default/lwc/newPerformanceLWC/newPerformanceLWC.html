@@ -1,0 +1,12 @@
+<template>
+    <lightning-card title="Evaluation Edit" icon-name="standard:task">
+        <lightning-record-edit-form record-id={recordId} object-api-name="HRMSUS__Performance__c">
+            <lightning-messages></lightning-messages>
+            <lightning-input-field field-name="HRMSUS__Performance_Group__c" required></lightning-input-field>
+            <lightning-input-field field-name="HRMSUS__Review_Start_Date__c" required></lightning-input-field>
+            <lightning-input-field field-name="HRMSUS__Review_End_Date__c" required></lightning-input-field>
+            <lightning-button variant="brand" type="button" name="save" label="Save" onclick={handleSave}></lightning-button>
+            <lightning-button variant="neutral" type="button" name="cancel" label="Cancel" onclick={handleCancel}></lightning-button>
+        </lightning-record-edit-form>
+    </lightning-card>
+</template>
